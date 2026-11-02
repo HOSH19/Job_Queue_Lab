@@ -30,3 +30,4 @@ class JobOut(BaseModel):
 class HealthOut(BaseModel):
     status: str
     redis: str
+    database: str

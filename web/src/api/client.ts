@@ -23,6 +23,7 @@ export interface JobCreate {
 export interface Health {
   status: string
   redis: string
+  database: string
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

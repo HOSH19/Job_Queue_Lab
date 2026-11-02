@@ -22,14 +22,14 @@ Code: [`app/queue.py`](../app/queue.py) · started via [`docker-compose.yml`](..
 
 Default key: `jobqueue:jobs` (`QUEUE_KEY` in `.env`).
 
-## What Redis stores vs SQLite
+## What Redis stores vs PostgreSQL
 
 | Store | Contents |
 |-------|----------|
 | **Redis** | Only **ids** of jobs ready to run (ephemeral work signals) |
-| **SQLite** | Full job record: type, payload, status, result, error, attempts |
+| **PostgreSQL** | Full job record: type, payload, status, result, error, attempts |
 
-If Redis restarts, queued ids can be lost — the durable truth is SQLite. Production systems often add “reclaim stuck `queued`/`running` jobs” recovery; this lab keeps that out of scope.
+If Redis restarts, queued ids can be lost — the durable truth is PostgreSQL. Production systems often add “reclaim stuck `queued`/`running` jobs” recovery; this lab keeps that out of scope.
 
 ## Why `BRPOP` instead of polling Redis
 
@@ -38,7 +38,7 @@ If Redis restarts, queued ids can be lost — the durable truth is SQLite. Produ
 ## Failure modes
 
 - **Redis down** — API cannot enqueue (`503`); `/health` shows `redis: down`.
-- **Worker down** — jobs stay `queued` in SQLite forever until a worker starts.
+- **Worker down** — jobs stay `queued` in PostgreSQL forever until a worker starts.
 - **Multiple workers** — each `BRPOP` takes one id; several workers share the list (simple horizontal scale).
 
 ## Experiment

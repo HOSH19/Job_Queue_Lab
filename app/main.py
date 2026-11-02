@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
-from app.db import get_db, init_db
+from app.db import get_db, init_db, ping_db
 from app.models import Job, JobStatus, utcnow
 from app.queue import enqueue, ping_redis
 from app.schemas import HealthOut, JobCreate, JobOut
@@ -49,9 +49,11 @@ app.add_middleware(
 @app.get("/health", response_model=HealthOut)
 def health() -> HealthOut:
     redis_ok = ping_redis()
+    db_ok = ping_db()
     return HealthOut(
-        status="ok" if redis_ok else "degraded",
+        status="ok" if redis_ok and db_ok else "degraded",
         redis="up" if redis_ok else "down",
+        database="up" if db_ok else "down",
     )
 
 

@@ -1,13 +1,13 @@
 # Job Queue Lab
 
-Backend-focused lab: **enqueue jobs over HTTP → Redis list → worker process → SQLite status**, with a small **React/Vite** UI that polls for updates.
+Backend-focused lab: **enqueue jobs over HTTP → Redis list → worker process → PostgreSQL status**, with a small **React/Vite** UI that polls for updates.
 
 ## Architecture
 
 ```text
 React (:5173)  --POST/GET /jobs-->  FastAPI (:8000)  --LPUSH-->  Redis
                                          |                         |
-                                      SQLite                   BRPOP worker
+                                    PostgreSQL                 BRPOP worker
 ```
 
 Job lifecycle: `queued` → `running` → `succeeded` | `failed` (retries up to `max_attempts`). Cancel only while `queued`.
@@ -24,12 +24,12 @@ Job lifecycle: `queued` → `running` → `succeeded` | `failed` (retries up to 
 
 - Python 3.11+
 - Node.js 18+
-- Docker (for Redis), or any Redis on `localhost:6379`
+- Docker (for Redis + PostgreSQL)
 
 ## Quick start
 
 ```bash
-# 1) Redis
+# 1) Redis + PostgreSQL
 docker compose up -d
 
 # 2) API
@@ -66,18 +66,19 @@ API docs: http://localhost:8000/docs
 ## Layout
 
 ```text
-app/                 FastAPI API, SQLite models, Redis queue, worker
+app/                 FastAPI API, SQLAlchemy models, Redis queue, worker
 web/                 React + Vite + TypeScript UI
-notes/               Stack explainers (API, Redis, worker, SQLite, handlers, React)
-docker-compose.yml   Redis
+notes/               Stack explainers (API, Redis, worker, Postgres, handlers, React)
+docker-compose.yml   Redis + PostgreSQL
 ```
 
-Concept notes: [FastAPI](notes/01_fastapi.md) · [Redis queue](notes/02_redis_queue.md) · [Worker](notes/03_worker.md) · [SQLite](notes/04_sqlite.md) · [Handlers](notes/05_job_handlers.md) · [React/Vite](notes/06_react_vite.md) — index in [`notes/`](notes/).
+Concept notes: [FastAPI](notes/01_fastapi.md) · [Redis queue](notes/02_redis_queue.md) · [Worker](notes/03_worker.md) · [PostgreSQL](notes/04_postgresql.md) · [Handlers](notes/05_job_handlers.md) · [React/Vite](notes/06_react_vite.md) — index in [`notes/`](notes/).
 
 ## Learning checklist
 
 - [ ] API and worker are **separate processes**
-- [ ] Redis holds **job ids**, SQLite holds **durable status/results**
+- [ ] Redis holds **job ids**, PostgreSQL holds **durable status/results**
 - [ ] Failed jobs re-queue until `max_attempts`
 - [ ] React polls while any job is `queued` / `running`
 - [ ] Vite proxy + FastAPI CORS keep FE and BE on different ports
+- [ ] `/health` shows Redis and database both `up`

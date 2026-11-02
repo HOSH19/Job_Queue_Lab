@@ -60,8 +60,10 @@ function App() {
         <div className="health">
           {health ? (
             <>
-              <span className={`dot ${health.redis === 'up' ? 'ok' : 'bad'}`} />
-              API {health.status} · Redis {health.redis}
+              <span
+                className={`dot ${health.redis === 'up' && health.database === 'up' ? 'ok' : 'bad'}`}
+              />
+              API {health.status} · Redis {health.redis} · DB {health.database}
             </>
           ) : (
             <span className="muted">Checking health…</span>

@@ -34,7 +34,7 @@ Even with a proxy, the API still enables CORS for `http://localhost:5173` ([`app
 This lab uses simple polling:
 
 - Cheap to understand.
-- Matches “ask the API for current SQLite state.”
+- Matches “ask the API for current PostgreSQL state.”
 - Good enough for a local dashboard.
 
 Production UIs often use websockets or SSE for push updates — out of scope here.

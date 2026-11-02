@@ -1,6 +1,6 @@
 # Worker (the background process)
 
-The worker is a **separate Python process** from the API. It pulls job ids from Redis, loads the job from SQLite, runs a handler, and writes the outcome back.
+The worker is a **separate Python process** from the API. It pulls job ids from Redis, loads the job from PostgreSQL, runs a handler, and writes the outcome back.
 
 Run it with:
 
@@ -13,7 +13,7 @@ Code: [`app/worker.py`](../app/worker.py)
 ## Main loop
 
 1. `BRPOP` the queue (short timeout).
-2. Load the job from SQLite by id.
+2. Load the job from PostgreSQL by id.
 3. Skip if missing, already finished, or `cancelled`.
 4. Set status `running`, increment `attempts`.
 5. Call the handler for `job.type`.

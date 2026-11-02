@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     redis_url: str = "redis://localhost:6379/0"
-    database_url: str = "sqlite:///./data/jobs.db"
+    database_url: str = "postgresql+psycopg://jobqueue:jobqueue@localhost:5432/jobqueue"
     queue_key: str = "jobqueue:jobs"
     max_attempts: int = 3
     cors_origins: str = "http://localhost:5173"
