@@ -72,7 +72,7 @@ notes/               Stack explainers (API, Redis, worker, Postgres, handlers, R
 docker-compose.yml   Redis + PostgreSQL
 ```
 
-Concept notes: [FastAPI](notes/01_fastapi.md) · [Redis queue](notes/02_redis_queue.md) · [Worker](notes/03_worker.md) · [PostgreSQL](notes/04_postgresql.md) · [Handlers](notes/05_job_handlers.md) · [React/Vite](notes/06_react_vite.md) — index in [`notes/`](notes/).
+Concept notes: [FastAPI](notes/01_fastapi.md) · [Redis](notes/02_redis_queue.md) · [Worker](notes/03_worker.md) · [PostgreSQL](notes/04_postgresql.md) · [Handlers](notes/05_job_handlers.md) · [React/Vite](notes/06_react_vite.md) · [HTTP](notes/07_http_methods.md) · [CORS](notes/08_cors.md) · [Polling](notes/09_polling_websockets.md) — index in [`notes/`](notes/).
 
 ## Learning checklist
 
