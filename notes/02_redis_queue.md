@@ -22,14 +22,29 @@ Code: [`app/queue.py`](../app/queue.py) · started via [`docker-compose.yml`](..
 
 Default key: `jobqueue:jobs` (`QUEUE_KEY` in `.env`).
 
-## What Redis stores vs PostgreSQL
+## Redis vs PostgreSQL (not the same thing)
 
-| Store | Contents |
-|-------|----------|
-| **Redis** | Only **ids** of jobs ready to run (ephemeral work signals) |
-| **PostgreSQL** | Full job record: type, payload, status, result, error, attempts |
+They are **different systems** with different jobs in this lab:
 
-If Redis restarts, queued ids can be lost — the durable truth is PostgreSQL. Production systems often add “reclaim stuck `queued`/`running` jobs” recovery; this lab keeps that out of scope.
+| | **Redis** | **PostgreSQL** |
+|--|-----------|----------------|
+| **Role here** | Work **queue** | Durable **job database** |
+| **Stores** | Job **ids** waiting to run | Full job rows (type, payload, status, result, error, attempts) |
+| **Lifetime** | Temporary hand-off to the worker | Long-lived history the UI polls |
+| **Port** | `6379` | `5432` |
+| **If it restarts** | Queued ids can be lost | Job rows persist (Docker volume) |
+
+```text
+API creates job in PostgreSQL (status: queued)
+     → pushes id into Redis
+Worker pops id from Redis
+     → loads/updates that job in PostgreSQL
+```
+
+**Redis = “wake up, do this next.”**  
+**Postgres = “here’s what the job is and how it turned out.”**
+
+See also [04_postgresql.md](04_postgresql.md). Production systems often add “reclaim stuck `queued`/`running` jobs” after a Redis restart; this lab keeps that out of scope.
 
 ## Why `BRPOP` instead of polling Redis
 

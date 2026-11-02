@@ -8,7 +8,17 @@ Code: [`app/models.py`](../app/models.py) · [`app/db.py`](../app/db.py)
 Compose service: [`docker-compose.yml`](../docker-compose.yml)  
 Default URL: `postgresql+psycopg://jobqueue:jobqueue@localhost:5432/jobqueue`
 
-## Why Postgres (not only Redis)?
+## Redis vs PostgreSQL (not the same thing)
+
+They are **different systems** with different jobs in this lab:
+
+| | **Redis** | **PostgreSQL** |
+|--|-----------|----------------|
+| **Role here** | Work **queue** | Durable **job database** |
+| **Stores** | Job **ids** waiting to run | Full job rows (type, payload, status, result, error, attempts) |
+| **Lifetime** | Temporary hand-off to the worker | Long-lived history the UI polls |
+| **Port** | `6379` | `5432` |
+| **If it restarts** | Queued ids can be lost | Job rows persist (Docker volume) |
 
 Redis is great for a fast queue of ids, but:
 
@@ -16,7 +26,8 @@ Redis is great for a fast queue of ids, but:
 - The UI polls **status history**, not “who is next in line.”
 - Cancel / succeeded / failed are business states, not queue positions.
 
-So: **Redis = wake the worker; PostgreSQL = remember the job.**
+So: **Redis = wake the worker; PostgreSQL = remember the job.**  
+See also [02_redis_queue.md](02_redis_queue.md).
 
 ## Why Postgres instead of SQLite?
 

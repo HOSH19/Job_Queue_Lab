@@ -10,6 +10,36 @@ React (:5173)  --POST/GET /jobs-->  FastAPI (:8000)  --LPUSH-->  Redis
                                     PostgreSQL                 BRPOP worker
 ```
 
+### What happens when you enqueue a job
+
+```mermaid
+sequenceDiagram
+  participant UI as ReactUI
+  participant API as FastAPI
+  participant PG as PostgreSQL
+  participant Redis as Redis
+  participant Worker as Worker
+
+  UI->>API: POST /jobs
+  API->>PG: Insert job status queued
+  API->>Redis: LPUSH job_id
+  API-->>UI: 201 JobOut still queued
+  Worker->>Redis: BRPOP job_id
+  Worker->>PG: Set status running
+  Worker->>Worker: Run handler
+  alt success
+    Worker->>PG: Set succeeded plus result
+  else failure with retries left
+    Worker->>PG: Set queued plus error
+    Worker->>Redis: LPUSH job_id again
+  else failure attempts exhausted
+    Worker->>PG: Set failed plus error
+  end
+  UI->>API: GET /jobs poll
+  API->>PG: Read jobs
+  API-->>UI: Updated statuses
+```
+
 Job lifecycle: `queued` → `running` → `succeeded` | `failed` (retries up to `max_attempts`). Cancel only while `queued`.
 
 ### Job types
