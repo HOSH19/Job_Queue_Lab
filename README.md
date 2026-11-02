@@ -68,8 +68,11 @@ API docs: http://localhost:8000/docs
 ```text
 app/                 FastAPI API, SQLite models, Redis queue, worker
 web/                 React + Vite + TypeScript UI
+notes/               Stack explainers (API, Redis, worker, SQLite, handlers, React)
 docker-compose.yml   Redis
 ```
+
+Concept notes: [FastAPI](notes/01_fastapi.md) · [Redis queue](notes/02_redis_queue.md) · [Worker](notes/03_worker.md) · [SQLite](notes/04_sqlite.md) · [Handlers](notes/05_job_handlers.md) · [React/Vite](notes/06_react_vite.md) — index in [`notes/`](notes/).
 
 ## Learning checklist
 
