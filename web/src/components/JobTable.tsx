@@ -28,6 +28,7 @@ export function JobTable({ jobs, selectedId, onSelect }: Props) {
                 <th>ID</th>
                 <th>Type</th>
                 <th>Status</th>
+                <th>Pri</th>
                 <th>Attempts</th>
                 <th>Created</th>
                 <th>Updated</th>
@@ -45,6 +46,7 @@ export function JobTable({ jobs, selectedId, onSelect }: Props) {
                   <td>
                     <span className={`badge badge-${job.status}`}>{job.status}</span>
                   </td>
+                  <td>{job.priority}</td>
                   <td>
                     {job.attempts}/{job.max_attempts}
                   </td>

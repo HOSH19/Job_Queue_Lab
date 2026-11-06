@@ -7,3 +7,13 @@ pydantic-settings>=2.6.0
 python-dotenv>=1.0.1
 redis>=5.2.0
 httpx>=0.28.0
+alembic>=1.14.0
+prometheus-client>=0.21.0
+python-json-logger>=3.2.0
+slowapi>=0.1.9
+
+# Dev / test
+pytest>=8.3.0
+pytest-cov>=6.0.0
+ruff>=0.8.0
+fakeredis>=2.26.0

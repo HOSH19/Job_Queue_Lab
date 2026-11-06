@@ -10,6 +10,8 @@ class JobCreate(BaseModel):
     type: JobType
     payload: dict[str, Any] = Field(default_factory=dict)
     max_attempts: int | None = Field(default=None, ge=1, le=10)
+    priority: int = Field(default=0, ge=0, le=10)
+    run_at: datetime | None = None
 
 
 class JobOut(BaseModel):
@@ -21,6 +23,9 @@ class JobOut(BaseModel):
     error: str | None = None
     attempts: int
     max_attempts: int
+    priority: int = 0
+    run_at: datetime | None = None
+    idempotency_key: str | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -31,3 +36,7 @@ class HealthOut(BaseModel):
     status: str
     redis: str
     database: str
+
+
+class DlqItem(BaseModel):
+    job_id: str

@@ -212,6 +212,22 @@ tbody tr.selected {
   color: #c0392b;
 }
 
+.badge-dead {
+  background: #3b1212;
+  color: #ffb4b4;
+}
+
+.timeline {
+  margin: 0 0 0.75rem;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.timeline .error {
+  color: #c0392b;
+}
+
 .badge-cancelled {
   background: #eee;
   color: #555;

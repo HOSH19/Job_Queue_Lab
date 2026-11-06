@@ -18,12 +18,12 @@ Code: [`app/jobs/handlers.py`](../app/jobs/handlers.py)
 
 ```text
 queued → running → succeeded
-                 → failed          (attempts exhausted)
-queued → cancelled                 (API cancel before worker claims)
+                 → dead            (attempts exhausted → also pushed to DLQ)
+queued → cancelled                 (API cancel before worker claims; Redis id removed)
 running → queued                   (retry after error)
 ```
 
-Cancel is only allowed while `queued`. Once the worker has set `running`, cancel returns `409`.
+Cancel is only allowed while `queued`. Once the worker has set `running`, cancel returns `409`. Permanent failure is status **`dead`** (not `failed`) so you can tell “gave up + DLQ” from older docs that said `failed`.
 
 ## Adding a new job type
 
@@ -37,6 +37,7 @@ Keep handlers **pure-ish**: take payload, return a JSON-serializable result or r
 ## Experiment
 
 1. Run `sleep` with 2 seconds — table should show `running` briefly.
-2. Run `fail` with `max_attempts` 3 — watch attempts and final `failed`.
+2. Run `fail` with `max_attempts` 1 — watch it land in `dead` and appear on `GET /dlq`.
 3. Enqueue a long `sleep`, cancel immediately if still `queued`.
 4. Run `http_fetch` against `https://httpbin.org/get` and read the detail panel.
+5. Try `http_fetch` with `http://localhost/` — should be rejected (SSRF guard).

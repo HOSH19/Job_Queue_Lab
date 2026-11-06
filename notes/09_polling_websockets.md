@@ -50,17 +50,17 @@ UI  <==persistent socket==>  API
 - More moving parts (connection lifecycle, reconnects, load balancers).
 - API must broadcast events when the worker updates Postgres (or the UI still polls DB somehow).
 
-**This lab does not implement WebSockets** — on purpose, so the FE↔BE story stays “REST + poll.”
+**This lab now implements WebSockets** at `/ws/jobs`: the worker publishes Redis pub/sub events and the API forwards them to browsers. The UI still falls back to polling if the socket drops.
 
 ## How it fits the stack
 
 | Piece | Role |
 |-------|------|
-| Worker | Writes new status to **PostgreSQL** |
-| API | Serves current truth via **GET** |
-| UI | Discovers changes via **polling** (or, in other apps, via push) |
+| Worker | Writes new status to **PostgreSQL** and publishes Redis events |
+| API | Serves REST + `/ws/jobs` push |
+| UI | Prefers WebSocket refresh; polls if the socket is down |
 
-Redis is not involved in UI updates — only in waking the worker.
+Redis is used both to wake workers and to fan out UI events.
 
 ## Experiment
 

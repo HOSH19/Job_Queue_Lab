@@ -7,8 +7,11 @@ In this lab Redis is **not a cache**. It is a **queue of job ids** waiting for a
 HTTP requests should return quickly. Slow work (sleep, HTTP fetch, anything that can fail) runs in another process. Redis is the hand-off:
 
 ```text
-API  --LPUSH job_id-->  Redis list  --BRPOP-->  Worker
+API  --ZADD job_id-->  Redis ZSET  --BZPOPMIN-->  Worker
+         \-- delayed ZSET (future run_at) --promote-->/
 ```
+
+Early versions of this lab used a plain list (`LPUSH` / `BRPOP`). The queue now uses sorted sets so **priority** and **delayed** jobs work — see [15_advanced_queue.md](15_advanced_queue.md).
 
 Code: [`app/queue.py`](../app/queue.py) · started via [`docker-compose.yml`](../docker-compose.yml)
 
@@ -16,11 +19,14 @@ Code: [`app/queue.py`](../app/queue.py) · started via [`docker-compose.yml`](..
 
 | Call | Meaning |
 |------|---------|
-| `LPUSH queue_key job_id` | Enqueue (push to the left) |
-| `BRPOP queue_key timeout` | Worker blocks until an id appears (or timeout) |
+| `ZADD queue_key score job_id` | Enqueue ready work (score encodes priority) |
+| `BZPOPMIN queue_key timeout` | Worker blocks until the highest-priority id appears |
+| `ZADD delayed_key timestamp job_id` | Schedule for later |
+| `LPUSH dlq_key job_id` | Dead-letter after retries exhausted |
+| `PUBLISH events_channel payload` | Fan-out UI WebSocket events |
 | `PING` | Health check from `/health` |
 
-Default key: `jobqueue:jobs` (`QUEUE_KEY` in `.env`).
+Default keys: `jobqueue:jobs`, `jobqueue:delayed`, `jobqueue:dlq` (see `.env`).
 
 ## Redis vs PostgreSQL (not the same thing)
 
